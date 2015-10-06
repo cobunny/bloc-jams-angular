@@ -1,21 +1,12 @@
-<div>
-    <!-- HERO CONTENT -->
-    <h1>Bloc Jams</h1>
-    <h3>Turn the music up!</h3>
-</div>
+<section class="hero-content">   <!-- HERO CONTENT -->
+    <h1 class="hero-title">{{ tagLine }}</h1>
+</section>
 
-<div>
-    <!-- SELLING POINTS -->
-    <div>
-        <h5>Choose your music</h5>
-        <p>The world is full of music; why should you have to listen to music that someone else chose?</p>
+<section class="selling-points container clearfix">   <!-- SELLING POINTS -->
+    <div class="point column third" ng-repeat="point in LandingController.points">
+        <span class='ion-music-note'></span>
+        <h5 class="point-title">{{ point.title }}</h5>
+        <p class="point-description">{{ point.description }}</p>
     </div>
-    <div>
-        <h5>Unlimited, streaming, ad-free</h5>
-        <p>No arbitrary limits. No distractions.</p>
-    </div>
-    <div>
-        <h5>Mobile enabled</h5>
-        <p>Listen to your music on the go. This streaming service is available on all mobile platforms.</p>
-    </div>
-</div>
+</section>
+

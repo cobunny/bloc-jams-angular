@@ -1,48 +1,13 @@
-<section class="album-covers container clearfix">
-    <div class="collection-album-container column fourth">
-        <img src="assets/images/album_covers/01.png" />
+<section class="album-covers container" clearfix>
+    <div class="collection-album-container column fourth" ng-repeat="album in albums">
+        <img ng-src="{{album.albumArtUrl}}" />
         <div class="collection-album-info caption">
             <p>
-                <a class="album-name" href="#">The Colors</a>
+                <a class="album-name" ui-sref="album" ng-click="setAlbum($index)">{{album.name}}</a>
                 <br/>
-                <a href="#">Pablo Picasso</a>
-                <br/> X songs
+                <a ui-sref="album">{{album.artist}}</a>
                 <br/>
-            </p>
-        </div>
-    </div>
-    <div class="collection-album-container column fourth">
-        <img src="assets/images/album_covers/01.png" />
-        <div class="collection-album-info caption">
-            <p>
-                <a class="album-name" href="#">The Colors</a>
-                <br/>
-                <a href="#">Pablo Picasso</a>
-                <br/> X songs
-                <br/>
-            </p>
-        </div>
-    </div>
-    <div class="collection-album-container column fourth">
-        <img src="assets/images/album_covers/01.png" />
-        <div class="collection-album-info caption">
-            <p>
-                <a class="album-name" href="#">The Colors</a>
-                <br/>
-                <a href="#">Pablo Picasso</a>
-                <br/> X songs
-                <br/>
-            </p>
-        </div>
-    </div>
-    <div class="collection-album-container column fourth">
-        <img src="assets/images/album_covers/01.png" />
-        <div class="collection-album-info caption">
-            <p>
-                <a class="album-name" href="#">The Colors</a>
-                <br/>
-                <a href="#">Pablo Picasso</a>
-                <br/> X songs
+                {{album.songs.length}} songs
                 <br/>
             </p>
         </div>
