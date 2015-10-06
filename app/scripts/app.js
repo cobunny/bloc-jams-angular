@@ -54,8 +54,8 @@ blocJams.controller('CollectionController', ['$scope', function ($scope) {
         $scope.albums.push(angular.copy(albumPicasso));
     }
     
-    $scope.setAlbum = function($index) {
-        SongPlayer.setCurrentAlbumIndex($index);
+    $scope.setAlbum = function() {
+        setCurrentAlbumIndex();
     };
     
 }]);
