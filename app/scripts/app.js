@@ -48,19 +48,16 @@ blocJams.controller('LandingController', ['$scope', function ($scope) {
 }]);
 
 
+
 blocJams.controller('CollectionController', ['$scope', function ($scope) {
     $scope.albums = [];
     for (var i = 0; i < 12; i++) {
         $scope.albums.push(angular.copy(albumPicasso));
     }
-    
-    $scope.setAlbum = function($index) {
-        SongPlayer.setCurrentAlbumIndex($index);
-    };
-    
 }]);
+
 
 blocJams.controller('AlbumController', ['$scope', function ($scope) {
     $scope.album = albumPicasso;
-    
+
 }]);
