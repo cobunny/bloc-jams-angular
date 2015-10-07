@@ -27,6 +27,8 @@ blocJams.config(['$stateProvider', '$locationProvider', function ($stateProvider
 }]);
 
 
+
+
 blocJams.controller('LandingController', ['$scope', function ($scope) {
     $scope.tagLine = "Turn the music up!";
     $scope.points = [
@@ -45,8 +47,9 @@ blocJams.controller('LandingController', ['$scope', function ($scope) {
             title: 'Mobile enabled',
             description: 'Listen to your music on the go. This streaming service is available on all mobile platforms.'
         }];                        
-                        
 }]);
+
+        
 
 
 blocJams.controller('CollectionController', ['$scope', function ($scope) {
@@ -56,7 +59,10 @@ blocJams.controller('CollectionController', ['$scope', function ($scope) {
     }
 }]);
 
-blocJams.controller('AlbumController', ['$scope', function ($scope) {
-    $scope.album = albumPicasso;
 
+
+
+blocJams.controller('AlbumController', ['$scope', function ($scope) {
+
+    $scope.album = albumPicasso;
 }]);
