@@ -44,7 +44,8 @@ blocJams.controller('LandingController', ['$scope', function ($scope) {
             icon: 'ion-iphone',
             title: 'Mobile enabled',
             description: 'Listen to your music on the go. This streaming service is available on all mobile platforms.'
-        }];
+        }];                        
+                        
 }]);
 
 
@@ -53,14 +54,9 @@ blocJams.controller('CollectionController', ['$scope', function ($scope) {
     for (var i = 0; i < 12; i++) {
         $scope.albums.push(angular.copy(albumPicasso));
     }
-    
-    $scope.setAlbum = function($index) {
-        SongPlayer.setCurrentAlbumIndex($index);
-    };
-    
 }]);
 
 blocJams.controller('AlbumController', ['$scope', function ($scope) {
     $scope.album = albumPicasso;
-    
+
 }]);
