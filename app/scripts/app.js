@@ -27,26 +27,30 @@ blocJams.config(['$stateProvider', '$locationProvider', function ($stateProvider
 }]);
 
 
+
+
 blocJams.controller('LandingController', ['$scope', function ($scope) {
     $scope.tagLine = "Turn the music up!";
     $scope.points = [
         {
             icon: 'ion-music-note',
             title: 'Choose your music',
-            description: 'The world is full of music; why should you have to listen to music that someone else chose?'
+            description: 'The world is full of music; why should you have to listen to music that someone else chose?',
         },
         {
             icon: 'ion-radio-waves',
             title: 'Unlimited, streaming, ad-free',
-            description: 'No arbitrary limits. No distractions.'
+            description: 'No arbitrary limits. No distractions.',
         },
         {
             icon: 'ion-iphone',
             title: 'Mobile enabled',
-            description: 'Listen to your music on the go. This streaming service is available on all mobile platforms.'
+            description: 'Listen to your music on the go. This streaming service is available on all mobile platforms.',
         }];
+    
 }]);
 
+        
 
 
 blocJams.controller('CollectionController', ['$scope', function ($scope) {
@@ -57,7 +61,19 @@ blocJams.controller('CollectionController', ['$scope', function ($scope) {
 }]);
 
 
+
+
 blocJams.controller('AlbumController', ['$scope', function ($scope) {
+
     $scope.album = albumPicasso;
+    /*    $scope.albums = [albumPicasso, albumMarconi, albumMothership];
+        $scope.$index = 1;
+        $scope.switchAlbum = function($index){
+            $scope.album = $scope.albums[$index];
+            $index++;
+            if ($index == $scope.albums.length) {
+                $index = 0;
+            }
+        };*/
 
 }]);
