@@ -27,8 +27,6 @@ blocJams.config(['$stateProvider', '$locationProvider', function ($stateProvider
 }]);
 
 
-
-
 blocJams.controller('LandingController', ['$scope', function ($scope) {
     $scope.tagLine = "Turn the music up!";
     $scope.points = [
@@ -46,10 +44,46 @@ blocJams.controller('LandingController', ['$scope', function ($scope) {
             icon: 'ion-iphone',
             title: 'Mobile enabled',
             description: 'Listen to your music on the go. This streaming service is available on all mobile platforms.'
-        }];                        
+        }];
+    
 }]);
 
-        
+
+blocJams.directive('qmSellingPoints', [function () {
+
+    var linkFunction = function (scope, element, attributes) {
+        var points = $('.point');
+
+        var animatePoints = function (points) {
+            angular.element(points).css({
+                opacity: 1,
+                transform: 'scaleX(1) translateY(0)'
+            });
+        };
+
+
+        if ($(window).height() > 950) {
+            angular.forEach(points, function (point) {
+                animatePoints(point);
+            });
+        }
+
+        var scrollDistance = $('.selling-points').offset().top - $(window).height() + 200;
+
+        $(window).scroll(function (event) {
+            if ($(window).scrollTop() >= scrollDistance) {
+                angular.forEach(points, function (point) {
+                    animatePoints(point);
+                });
+            }
+        });
+    };
+
+    return {
+        restrict: 'A',
+        link: linkFunction
+    }
+}]);
 
 
 blocJams.controller('CollectionController', ['$scope', function ($scope) {
@@ -60,9 +94,30 @@ blocJams.controller('CollectionController', ['$scope', function ($scope) {
 }]);
 
 
+blocJams.filter('timeCode', function () {
+    return function (timeInSeconds) {
+        if (timeInSeconds) {
+            var totalSeconds = parseFloat(timeInSeconds);
+            var minutes = Math.floor(totalSeconds / 60) + "";
+            var seconds = Math.floor(totalSeconds % 60) + "";
+
+            return (minutes + ":" + seconds);
+        } else {
+            return null;
+        }
+    }
+});
 
 
 blocJams.controller('AlbumController', ['$scope', function ($scope) {
-
     $scope.album = albumPicasso;
+    var albums = [albumPicasso, albumMarconi, albumMothership];
+    var index = 1;
+    $scope.switchAlbum = function(album){   
+        $scope.album = albums[index];
+        index++;
+        if (index == albums.length) {
+            index = 0;
+        }      
+    };
 }]);
