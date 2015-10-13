@@ -109,7 +109,7 @@ blocJams.filter('timeCode', function () {
 });
 
 
-blocJams.controller('AlbumController', ['$scope', function ($scope) {
+blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope, SongPlayer) {
     $scope.album = albumPicasso;
     var albums = [albumPicasso, albumMarconi, albumMothership];
     var index = 1;
@@ -120,4 +120,80 @@ blocJams.controller('AlbumController', ['$scope', function ($scope) {
             index = 0;
         }      
     };
+    
+    $scope.setSong = function(song){
+        //Prevent Multiple Songs From Playing Concurrently
+        if ($scope.currentSoundFile) {
+            $scope.currentSoundFile.stop();
+        }
+
+        $scope.currentSongFromAlbum = song;
+
+
+        $scope.currentSoundFile = new buzz.sound(currentSongFromAlbum.audioUrl, {
+            // #2
+            formats: ['mp3'],
+            preload: true
+        });
+    
+        $scope.currentSoundFile.play();
+        $scope.setVolume = SongPlayer.setVolume;
+    
+    };
 }]);
+
+
+blocJams.service('SongPlayer', function () {
+    this.currentSoundFile = null;
+    this.currentSongFromAlbum = null;
+    this.currentAlbum = null;
+    this.currentVolume = 80;
+    
+    var trackIndex = function (album, song) {
+        return album.songs.indexOf(song);
+    };
+    
+    
+    return {
+        play: function () {
+            this.Playing = true;
+            currentSoundFile.play();
+            
+        },
+        pause: function () {
+            this.Playing = false;
+            currentSoundFile.pause();    
+        },
+        setVolume: function (value) {
+            if (currentSoundFile) {
+                currentSoundFile.setVolume(currentVolume);
+            }
+        },
+        setTime: function(time) {
+            if (currentSoundFile) {
+                currentSoundFile.setTime(time);
+            }
+        },
+        previousSong: function() {
+            var currentSongIndex =trackIndex(currentAlbum,currentSong);
+            currentSongIndex--;
+            if (currentSongIndex < 0) {
+                currentSongIndex = currentAlbum.songs.length - 1;
+            }
+            setSong(currentSongIndex + 1);
+            currentSoundFile.play();
+            updateSeekBarWhileSongPlays();          
+        },
+        nextSong: function() {
+            var currentSongIndex = trackIndex(currentAlbum, currentSongFromAlbum);
+            currentSongIndex++;
+
+            if (currentSongIndex >= currentAlbum.songs.length) {
+                currentSongIndex = 0;
+            }
+            setSong(currentSongIndex + 1);
+            currentSoundFile.play();
+            updateSeekBarWhileSongPlays();        
+        }
+    };
+});
