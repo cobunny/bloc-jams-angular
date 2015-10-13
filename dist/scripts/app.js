@@ -121,40 +121,29 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope
         }      
     };
     
-    $scope.setSong = function(song){
-        //Prevent Multiple Songs From Playing Concurrently
-        if ($scope.currentSoundFile) {
-            $scope.currentSoundFile.stop();
-        }
-
-        $scope.currentSongFromAlbum = song;
-
-
-        $scope.currentSoundFile = new buzz.sound(currentSongFromAlbum.audioUrl, {
-            // #2
-            formats: ['mp3'],
-            preload: true
-        });
-    
-        $scope.currentSoundFile.play();
-        $scope.setVolume = SongPlayer.setVolume;
-    
+    $scope.play = function(song) {
+        SongPlayer.setSong($scope.album, song);
     };
+    
+    $scope.pause = function() {
+        $scope.Playing = SongPlayer.Playing;
+        SongPlayer.pause();
+    };
+    
+    
 }]);
 
 
 blocJams.service('SongPlayer', function () {
-    this.currentSoundFile = null;
-    this.currentSongFromAlbum = null;
-    this.currentAlbum = null;
-    this.currentVolume = 80;
-    
+    var currentSoundFile = null;
+    var currentVolume = 80;
     var trackIndex = function (album, song) {
         return album.songs.indexOf(song);
     };
     
     
     return {
+        Playing: false,
         play: function () {
             this.Playing = true;
             currentSoundFile.play();
@@ -164,9 +153,9 @@ blocJams.service('SongPlayer', function () {
             this.Playing = false;
             currentSoundFile.pause();    
         },
-        setVolume: function (value) {
+        setVolume: function (volume) {
             if (currentSoundFile) {
-                currentSoundFile.setVolume(currentVolume);
+                currentSoundFile.setVolume(volume);
             }
         },
         setTime: function(time) {
@@ -174,8 +163,15 @@ blocJams.service('SongPlayer', function () {
                 currentSoundFile.setTime(time);
             }
         },
+        getTimePosition: function() {
+            if (currentSoundFile) {
+                currentSoundFile.bind('timeupdate', function (event) {
+                    return this.getTime() / this.getDuration();
+                });
+            }
+        },
         previousSong: function() {
-            var currentSongIndex =trackIndex(currentAlbum,currentSong);
+            var currentSongIndex =trackIndex(currentAlbum,currentSongFromAlbum);
             currentSongIndex--;
             if (currentSongIndex < 0) {
                 currentSongIndex = currentAlbum.songs.length - 1;
@@ -194,6 +190,22 @@ blocJams.service('SongPlayer', function () {
             setSong(currentSongIndex + 1);
             currentSoundFile.play();
             updateSeekBarWhileSongPlays();        
+        },
+        setSong: function(album, song){
+            if (currentSoundFile) {
+                currentSoundFile.stop();
+            }
+
+            this.currentAlbum = album;
+            this.currentSong = song;
+            
+            currentSoundFile = new buzz.sound(song.audioUrl, {
+                formats: ['mp3'],
+                preload: true
+            });
+
+            this.play();
+            this.setVolume(currentVolume);
         }
     };
 });
