@@ -21,7 +21,7 @@ blocJams.config(['$stateProvider', '$locationProvider', function ($stateProvider
         .state('album', {
             url: '/album',
             controller: 'AlbumController',
-            templateUrl: '/templates/album.html'
+            templateUrl: '/templates/album.html', 
         });
 
 }]);
@@ -49,7 +49,7 @@ blocJams.controller('LandingController', ['$scope', function ($scope) {
 }]);
 
 
-blocJams.directive('qmSellingPoints', [function () {
+blocJams.directive('qmSellingPoints', function () {
 
     var linkFunction = function (scope, element, attributes) {
         var points = $('.point');
@@ -83,7 +83,7 @@ blocJams.directive('qmSellingPoints', [function () {
         restrict: 'A',
         link: linkFunction
     }
-}]);
+});
 
 
 blocJams.controller('CollectionController', ['$scope', function ($scope) {
@@ -109,45 +109,37 @@ blocJams.filter('timeCode', function () {
 });
 
 
-blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope, SongPlayer) {
-    $scope.album = albumPicasso;
-    var albums = [albumPicasso, albumMarconi, albumMothership];
-    var index = 1;
-    $scope.switchAlbum = function(album){   
-        $scope.album = albums[index];
-        index++;
-        if (index == albums.length) {
-            index = 0;
-        }      
-    };
-    
-    $scope.play = function(song) {
-        SongPlayer.setSong($scope.album, song);
-    };
-    
-    $scope.pause = function() {
-        $scope.Playing = SongPlayer.Playing;
-        SongPlayer.pause();
-    };
-    
-    
-}]);
-
-
 blocJams.service('SongPlayer', function () {
     var currentSoundFile = null;
     var currentVolume = 80;
     var trackIndex = function (album, song) {
         return album.songs.indexOf(song);
     };
-    
-    
+
     return {
+        currentSong: null,
+        currentAlbum: null,
+        setSong:function(album, song){
+            if (currentSoundFile) {
+                currentSoundFile.stop();
+            }
+
+            this.currentAlbum = album;
+            this.currentSong = song;
+
+            currentSoundFile = new buzz.sound(song.audioUrl, {
+                formats: ['mp3'],
+                preload: true
+            });
+
+            this.play();
+            this.setVolume(currentVolume);
+        },
         Playing: false,
         play: function () {
             this.Playing = true;
             currentSoundFile.play();
-            
+
         },
         pause: function () {
             this.Playing = false;
@@ -171,41 +163,62 @@ blocJams.service('SongPlayer', function () {
             }
         },
         previousSong: function() {
-            var currentSongIndex =trackIndex(currentAlbum,currentSongFromAlbum);
+            
+            var currentSongIndex =trackIndex(this.currentAlbum, this.currentSong);
             currentSongIndex--;
+            
             if (currentSongIndex < 0) {
-                currentSongIndex = currentAlbum.songs.length - 1;
+                currentSongIndex = this.currentAlbum.songs.length - 1;
             }
-            setSong(currentSongIndex + 1);
-            currentSoundFile.play();
-            updateSeekBarWhileSongPlays();          
+
+            this.setSong(this.currentAlbum, this.currentAlbum.songs[currentSongIndex]);
+            currentSoundFile.play();          
         },
         nextSong: function() {
-            var currentSongIndex = trackIndex(currentAlbum, currentSongFromAlbum);
+            
+            var currentSongIndex = trackIndex(this.currentAlbum, this.currentSong);
             currentSongIndex++;
 
-            if (currentSongIndex >= currentAlbum.songs.length) {
+            if (currentSongIndex >= this.currentAlbum.songs.length) {
                 currentSongIndex = 0;
-            }
-            setSong(currentSongIndex + 1);
-            currentSoundFile.play();
-            updateSeekBarWhileSongPlays();        
-        },
-        setSong: function(album, song){
-            if (currentSoundFile) {
-                currentSoundFile.stop();
-            }
-
-            this.currentAlbum = album;
-            this.currentSong = song;
-            
-            currentSoundFile = new buzz.sound(song.audioUrl, {
-                formats: ['mp3'],
-                preload: true
-            });
-
-            this.play();
-            this.setVolume(currentVolume);
-        }
+            } 
+          
+            this.setSong(this.currentAlbum, this.currentAlbum.songs[currentSongIndex]);
+            currentSoundFile.play();            
+        }     
     };
 });
+
+
+blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope, SongPlayer) {
+    $scope.album = albumPicasso;
+    var albums = [albumPicasso, albumMarconi, albumMothership];
+    var index = 1;
+    $scope.switchAlbum = function(album){   
+        $scope.album = albums[index];
+        index++;
+        if (index == albums.length) {
+            index = 0;
+        }      
+    };
+    
+    $scope.play = function(song) {
+        SongPlayer.setSong($scope.album, song);
+    };
+    
+    $scope.pause = function() {
+        $scope.Playing = SongPlayer.Playing;
+        SongPlayer.pause();
+    };
+    
+    $scope.previousSong = function() {
+        SongPlayer.previousSong();
+    };
+    
+    $scope.nextSong = function() {
+        SongPlayer.nextSong();
+    };
+        
+    
+}]);
+
