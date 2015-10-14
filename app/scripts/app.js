@@ -21,7 +21,7 @@ blocJams.config(['$stateProvider', '$locationProvider', function ($stateProvider
         .state('album', {
             url: '/album',
             controller: 'AlbumController',
-            templateUrl: '/templates/album.html', 
+            templateUrl: '/templates/album.html'
         });
 
 }]);
@@ -117,8 +117,6 @@ blocJams.service('SongPlayer', function () {
     };
 
     return {
-        currentSong: null,
-        currentAlbum: null,
         setSong:function(album, song){
             if (currentSoundFile) {
                 currentSoundFile.stop();
