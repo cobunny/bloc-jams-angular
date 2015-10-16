@@ -109,15 +109,19 @@ blocJams.filter('timeCode', function () {
 });
 
 
-blocJams.service('SongPlayer', function () {
+blocJams.factory('SongPlayer', function () {
     var currentSoundFile = null;
     var currentVolume = 80;
     var trackIndex = function (album, song) {
         return album.songs.indexOf(song);
     };
-
+    
+    
     return {
-        setSong:function(album, song){
+        currentAlbum: null,
+        currentSong: null,
+        Playing: false,
+        setSong: function (album, song) {
             if (currentSoundFile) {
                 currentSoundFile.stop();
             }
@@ -133,7 +137,6 @@ blocJams.service('SongPlayer', function () {
             this.play();
             this.setVolume(currentVolume);
         },
-        Playing: false,
         play: function () {
             this.Playing = true;
             currentSoundFile.play();
@@ -144,6 +147,7 @@ blocJams.service('SongPlayer', function () {
             currentSoundFile.pause();    
         },
         setVolume: function (volume) {
+            this.volume = currentVolume;
             if (currentSoundFile) {
                 currentSoundFile.setVolume(volume);
             }
@@ -200,12 +204,18 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope
         }      
     };
     
-    $scope.play = function(song) {
+
+    $scope.currentSong = function() {   
+        return SongPlayer.currentSong;
+    }
+    
+    console.log( $scope.currentSong.name);
+
+    $scope.play = function (song) {
         SongPlayer.setSong($scope.album, song);
     };
-    
-    $scope.pause = function() {
-        $scope.Playing = SongPlayer.Playing;
+
+    $scope.pause = function () {
         SongPlayer.pause();
     };
     
@@ -217,6 +227,32 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope
         SongPlayer.nextSong();
     };
         
-    
+
+    $scope.currentVolume = function(volume) {
+        SongPlayer.setVolume(volume);
+    };
+
 }]);
+
+
+blocJams.directive('slider', function () {
+    
+    return {
+        templateUrl: '/templates/player_bar.html',
+        restrict: 'E',
+        scope: {
+        },
+        link: linkFunction
+    };
+    
+    
+    var linkFunction = function (scope, element, attributes) {
+        element.bind('click', function (event) {
+            var offsetX = event.pageX - $(this).offset().left;
+            var barWidth = element[0].firstElementChild.clientWidth;
+            var seekBarFillRatio = offsetX / barWidth;
+        });
+    };
+    
+});
 
