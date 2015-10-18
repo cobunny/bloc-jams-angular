@@ -11,7 +11,7 @@
     </section>
     <table class="album-view-song-list">
         <tr class="album-view-song-item" ng-repeat="song in album.songs">
-            <td class="song-item-number" song-number="{{$index+1}}" qm-on-off-hover ng-click="play(song)">{{$index+1}}.</td>
+            <td class="song-item-number" song-number="{{$index+1}}" qm-on-off-hover ng-click="isPlaying && song === currentSong() ? pause() : play(song)">{{$index+1}}.</td>
             <td class="song-item-title">{{song.name}}</td>
             <td class="song-item-duration">{{song.length | timeCode}}</td>
         </tr>
@@ -24,7 +24,7 @@
             <a class="previous" ng-click='previousSong()'>
                 <span class="ion-skip-backward"></span>
             </a>
-            <a class="play-pause" ng-click='pause()'>
+            <a class="play-pause" ng-click='isPlaying ? pause() : play(currentSong())'>
                 <span class="ion-play"></span>
             </a>
             <a class="next" ng-click='nextSong()'>
@@ -39,8 +39,8 @@
                     <div class="fill"></div>
                     <div class="thumb"></div>
                 </div>
-                <div class="current-time">2:30</div>
-                <div class="total-time">4:45</div>
+                <div class="current-time">{{timeData.time}}</div>
+                <div class="total-time">{{duration}}</div>
             </div>
             <h3 class="artist-name">{{album.artist}}</h3>
         </div>

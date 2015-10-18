@@ -45,7 +45,6 @@ blocJams.controller('LandingController', ['$scope', function ($scope) {
             title: 'Mobile enabled',
             description: 'Listen to your music on the go. This streaming service is available on all mobile platforms.'
         }];
-
 }]);
 
 
@@ -82,7 +81,7 @@ blocJams.directive('qmSellingPoints', function () {
     return {
         restrict: 'A',
         link: linkFunction
-    }
+    };
 });
 
 
@@ -105,7 +104,7 @@ blocJams.filter('timeCode', function () {
         } else {
             return null;
         }
-    }
+    };
 });
 
 
@@ -115,8 +114,6 @@ blocJams.service('SongPlayer', function () {
     var trackIndex = function (album, song) {
         return album.songs.indexOf(song);
     };
-
-
     return {
         currentAlbum: null,
         currentSong: null,
@@ -136,24 +133,17 @@ blocJams.service('SongPlayer', function () {
 
             this.play();
             this.setVolume(currentVolume);
+            return this.Playing;
         },
         play: function () {
             this.Playing = true;
             currentSoundFile.play();
+            return this.Playing;
 
         },
         pause: function () {
             this.Playing = false;
             currentSoundFile.pause();
-        },
-
-        togglePlayPause: function () {
-            if (this.pause()) {
-                this.currentSoundFile.play();
-                console.log("I am playing");
-            } else {
-                this.pause();
-            }
         },
         setVolume: function (volume) {
             this.volume = currentVolume;
@@ -161,17 +151,22 @@ blocJams.service('SongPlayer', function () {
                 currentSoundFile.setVolume(volume);
             }
         },
-        setTime: function (time) {
-            if (currentSoundFile) {
-                currentSoundFile.setTime(time);
-            }
-        },
-        getTimePosition: function () {
+        getTimePosition: function (callback) {
             if (currentSoundFile) {
                 currentSoundFile.bind('timeupdate', function (event) {
-                    return this.getTime() / this.getDuration();
+                    var timer = buzz.toTimer(this.getTime());
+                    callback({
+                        time: timer,
+                        percent: this.getPercent()
+                    });
                 });
             }
+        },
+        getDuration: function (callback) {
+            currentSoundFile.bind('loadedmetadata', function(event) {
+                var duration = buzz.toTimer(currentSoundFile.getDuration());
+                callback(duration);
+            });
         },
         previousSong: function () {
 
@@ -205,6 +200,8 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope
     $scope.album = albumPicasso;
     var albums = [albumPicasso, albumMarconi, albumMothership];
     var index = 1;
+    
+    $scope.isPlaying = false;
     $scope.switchAlbum = function (album) {
         $scope.album = albums[index];
         index++;
@@ -212,26 +209,36 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope
             index = 0;
         }
     };
-
-
+    
+    var timeUpdate = function() {
+        SongPlayer.getTimePosition(function(timeData) {
+            $scope.timeData = timeData;
+            $scope.$apply();
+        });
+    };
+    
+    var getDuration = function() {
+        SongPlayer.getDuration(function(duration) {
+            $scope.duration = duration;
+        });
+    };
+        
     $scope.currentSong = function () {
         return SongPlayer.currentSong;
-    }
+    };
 
 
     $scope.play = function (song) {
-
-        if (song !== this.currentSong) {
-            SongPlayer.setSong($scope.album, song);
-            console.log('Not the current song');
-        } else if (song === this.currentSong) {
-            SongPlayer.togglePlayPause();
-            console.log('it is the currentSong');
-        }
+        SongPlayer.setSong($scope.album, song);
+        $scope.isPlaying = SongPlayer.currentSong === null || SongPlayer.currentSong !== song ? SongPlayer.setSong($scope.album, song) : SongPlayer.play();
+        timeUpdate();
+        getDuration();
     };
 
     $scope.pause = function () {
-        SongPlayer.pause();
+        $scope.isPlaying = SongPlayer.pause();
+        timeUpdate();
+        
     };
 
     $scope.previousSong = function () {
