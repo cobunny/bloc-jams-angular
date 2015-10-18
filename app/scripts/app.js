@@ -228,7 +228,6 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope
             SongPlayer.togglePlayPause();
             console.log('it is the currentSong');
         }
-
     };
 
     $scope.pause = function () {
@@ -286,7 +285,6 @@ blocJams.directive('qmOnOffHover', function() {
       
 });
 */
-
 
 blocJams.directive('slider', function () {
 
