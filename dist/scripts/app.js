@@ -163,7 +163,7 @@ blocJams.service('SongPlayer', function () {
             }
         },
         getDuration: function (callback) {
-            currentSoundFile.bind('loadedmetadata', function(event) {
+            currentSoundFile.bind('loadedmetadata', function (event) {
                 var duration = buzz.toTimer(currentSoundFile.getDuration());
                 callback(duration);
             });
@@ -200,8 +200,9 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope
     $scope.album = albumPicasso;
     var albums = [albumPicasso, albumMarconi, albumMothership];
     var index = 1;
-    
+
     $scope.isPlaying = false;
+    
     $scope.switchAlbum = function (album) {
         $scope.album = albums[index];
         index++;
@@ -209,20 +210,20 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope
             index = 0;
         }
     };
-    
-    var timeUpdate = function() {
-        SongPlayer.getTimePosition(function(timeData) {
+
+    var timeUpdate = function () {
+        SongPlayer.getTimePosition(function (timeData) {
             $scope.timeData = timeData;
             $scope.$apply();
         });
     };
-    
-    var getDuration = function() {
-        SongPlayer.getDuration(function(duration) {
+
+    var getDuration = function () {
+        SongPlayer.getDuration(function (duration) {
             $scope.duration = duration;
         });
     };
-        
+
     $scope.currentSong = function () {
         return SongPlayer.currentSong;
     };
@@ -238,68 +239,70 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope
     $scope.pause = function () {
         $scope.isPlaying = SongPlayer.pause();
         timeUpdate();
-        
+
     };
 
     $scope.previousSong = function () {
         SongPlayer.previousSong();
+        timeUpdate();
+        getDuration();
     };
 
     $scope.nextSong = function () {
         SongPlayer.nextSong();
+        timeUpdate();
+        getDuration();
     };
 
 
     $scope.currentVolume = function (volume) {
         SongPlayer.setVolume(volume);
     };
+    
+    
+    $scope.hoverSong = null;
+    
+    $scope.hoverOn = function (song) {
+        this.hoverSong = song;
+    };
+
+    $scope.hoverOff = function () {
+        this.hoverSong = null;
+    };
 
 }]);
 
 
-// "qm-on-off-hover" directive : Mouse hover(leave) to show(hide) the play button 
-/*
-blocJams.directive('qmOnOffHover', function() {
-    var linkFunction = function (scope, element, attributes) {
-        
+/*blocJams.directive('qmHoverSong', function () {
 
-        var playButtonTemplate = '<a class="album-song-button"><span class="ion-play"></span></a>';
-        var pauseButtonTemplate = '<a class="album-song-button"><span class="ion-pause"></span></a>';
-
-        var songNumber = attributes.songNumber;
-        
-        // mouseover
-        element.on("mouseover", function (event) {
-
-            element[0].innerHTML = playButtonTemplate;
-
-        });
-
-        //mouseleave
-        element.on("mouseleave", function () {
-            if (element[0].innerHTML === playButtonTemplate) {
-                element[0].innerHTML = songNumber;
-            }
-        });
-        
-    };
-
-    return{
+    return {
         restrict: 'A',
-        link: linkFunction,
-       
+        replace: false,
+        template: '<a class="album-song-button" ng-show="hoverSong"><span class="ion-play"></span></a>',
+        controller: function ($scope) {
+            $scope.hoverSong = null;
+            $scope.hoverOn = function (song) {
+                this.hoverSong = song;
+            };
+
+            $scope.hoverOff = function () {
+                this.hoverSong = null;
+            };
+        }
     };
-      
-});
-*/
+    
+});*/
+
 
 blocJams.directive('slider', function () {
 
     return {
         templateUrl: '/templates/player_bar.html',
         restrict: 'E',
-        scope: {},
+        scope: {
+        },
         link: linkFunction
+        
     };
 
 

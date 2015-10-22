@@ -10,8 +10,10 @@
         </div>
     </section>
     <table class="album-view-song-list">
-        <tr class="album-view-song-item" ng-repeat="song in album.songs">
-            <td class="song-item-number" song-number="{{$index+1}}" qm-on-off-hover ng-click="isPlaying && song === currentSong() ? pause() : play(song)">{{$index+1}}.</td>
+        <tr class="album-view-song-item" ng-repeat="song in album.songs" ng-mouseover="hoverOn(song)" ng-mouseleave="hoverOff()">
+            <td class="song-item-number" ng-click="isPlaying && song === currentSong() ? pause() : play(song)">
+                <a class="album-song-button" ng-show="hoverSong"><span class="ion-play"></span></a> {{$index+1}}.
+            </td>
             <td class="song-item-title">{{song.name}}</td>
             <td class="song-item-duration">{{song.length | timeCode}}</td>
         </tr>
@@ -35,10 +37,7 @@
             <h2 class="song-name">{{currentSong().name}}</h2>
             <h2 class="artist-song-mobile">{{currentSong().name}} - {{album.artist}}</h2>
             <div class="seek-control">
-                <div class="seek-bar">
-                    <div class="fill"></div>
-                    <div class="thumb"></div>
-                </div>
+                <slider></slider>
                 <div class="current-time">{{timeData.time}}</div>
                 <div class="total-time">{{duration}}</div>
             </div>
@@ -47,10 +46,7 @@
         <div class="player-bar-control-group right-controls">
             <div class="volume">
                 <span class="ion-volume-high"></span>
-                <div class="seek-bar">
-                    <div class="fill"></div>
-                    <div class="thumb"></div>
-                </div>
+                <slider></slider>
             </div>
         </div>
     </div>
