@@ -202,7 +202,7 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope
     var index = 1;
 
     $scope.isPlaying = false;
-    
+
     $scope.switchAlbum = function (album) {
         $scope.album = albums[index];
         index++;
@@ -228,7 +228,6 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope
         return SongPlayer.currentSong;
     };
 
-
     $scope.play = function (song) {
         SongPlayer.setSong($scope.album, song);
         $scope.isPlaying = SongPlayer.currentSong === null || SongPlayer.currentSong !== song ? SongPlayer.setSong($scope.album, song) : SongPlayer.play();
@@ -239,7 +238,6 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope
     $scope.pause = function () {
         $scope.isPlaying = SongPlayer.pause();
         timeUpdate();
-
     };
 
     $scope.previousSong = function () {
@@ -258,10 +256,11 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope
     $scope.currentVolume = function (volume) {
         SongPlayer.setVolume(volume);
     };
-    
-    
+
+
     $scope.hoverSong = null;
-    
+
+
     $scope.hoverOn = function (song) {
         this.hoverSong = song;
     };
@@ -270,28 +269,15 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope
         this.hoverSong = null;
     };
 
-}]);
-
-
-/*blocJams.directive('qmHoverSong', function () {
-
-    return {
-        restrict: 'A',
-        replace: false,
-        template: '<a class="album-song-button" ng-show="hoverSong"><span class="ion-play"></span></a>',
-        controller: function ($scope) {
-            $scope.hoverSong = null;
-            $scope.hoverOn = function (song) {
-                this.hoverSong = song;
-            };
-
-            $scope.hoverOff = function () {
-                this.hoverSong = null;
-            };
+    $scope.getState = function (song) {
+        if (this.isPlaying && song === this.currentSong()) {
+            return 'playing';
+        } else if (song === this.hoverSong) {
+            return 'hovering';
         }
+        return 'default';
     };
-    
-});*/
+}]);
 
 
 blocJams.directive('slider', function () {
@@ -299,10 +285,9 @@ blocJams.directive('slider', function () {
     return {
         templateUrl: '/templates/player_bar.html',
         restrict: 'E',
-        scope: {
-        },
+        scope: {},
         link: linkFunction
-        
+
     };
 
 

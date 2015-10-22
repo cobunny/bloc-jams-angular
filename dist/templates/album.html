@@ -12,7 +12,15 @@
     <table class="album-view-song-list">
         <tr class="album-view-song-item" ng-repeat="song in album.songs" ng-mouseover="hoverOn(song)" ng-mouseleave="hoverOff()">
             <td class="song-item-number" ng-click="isPlaying && song === currentSong() ? pause() : play(song)">
-                <a class="album-song-button" ng-show="hoverSong"><span class="ion-play"></span></a> {{$index+1}}.
+                <div ng-switch="getState(song)">
+                    <div ng-switch-when="hovering">
+                        <a class="album-song-button"><span class="ion-play"></span></a>
+                    </div>
+                    <div ng-switch-when="playing">
+                        <a class="album-song-button"><span class="ion-pause"></span></a>
+                    </div>
+                    <div ng-switch-default>
+                        {{$index+1}}.
             </td>
             <td class="song-item-title">{{song.name}}</td>
             <td class="song-item-duration">{{song.length | timeCode}}</td>
