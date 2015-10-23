@@ -46,8 +46,8 @@
             <h2 class="song-name">{{currentSong().name}}</h2>
             <h2 class="artist-song-mobile">{{currentSong().name}} - {{album.artist}}</h2>
             <div class="seek-control">
-                <slider></slider>
-                <div class="current-time">{{timeData.time}}</div>
+                <slider value ='{{ setTime }}' max ='{{duration}}' on-value-change='setTime(value)'></slider>
+                <div class="current-time">{{timeData}}</div>
                 <div class="total-time">{{duration}}</div>
             </div>
             <h3 class="artist-name">{{album.artist}}</h3>
@@ -55,7 +55,7 @@
         <div class="player-bar-control-group right-controls">
             <div class="volume">
                 <span class="ion-volume-high"></span>
-                <slider current-volume ='{{ currentVolume }}' max-volume='100' on-volume-change='setVolume(value)'></slider>
+                <slider value ='{{ currentVolume }}' max ='100' on-value-change='setVolume(value)'></slider>
             </div>
         </div>
     </div>
