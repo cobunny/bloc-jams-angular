@@ -152,6 +152,11 @@ blocJams.service('SongPlayer', function () {
                 currentSoundFile.setVolume(volume);
             }
         },
+        setTime: function (time) {
+            if (currentSoundFile) {
+                currentSoundFile.setTime(time);
+            }
+        },
         getTimePosition: function (callback) {
             if (currentSoundFile) {
                 currentSoundFile.bind('timeupdate', function (event) {
@@ -218,7 +223,8 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope
 
     var timeUpdate = function () {
         SongPlayer.getTimePosition(function (timeData) {
-            $scope.timeData = timeData;
+            $scope.timeData = timeData.time;
+            $scope.timePercent = timeData.percent;
             $scope.$apply();
         });
     };
@@ -227,6 +233,10 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope
         SongPlayer.getDuration(function (duration) {
             $scope.duration = duration;
         });
+    };
+
+    $scope.setTime = function (time) {
+        return SongPlayer.setTime(time);
     };
 
     $scope.currentSong = function () {
@@ -287,8 +297,8 @@ blocJams.directive('slider', function () {
         scope.value = attributes.value;
         scope.max = attributes.max;
 
-        var fill = $('.fill')[1];
-        var thumb = $('.thumb')[1];
+        var fill = $('.fill');
+        var thumb = $('.thumb');
 
         attributes.$observe('value', function (newValue) {
             scope.value = parseFloat(newValue);
@@ -297,6 +307,15 @@ blocJams.directive('slider', function () {
         attributes.$observe('max', function (newValue) {
             scope.max = parseFloat(newValue);
         });
+
+
+        var calculateSeekBarFillRatio = function (event) {
+            var offsetX = event.pageX - element.offset().left;
+            var barWidth = element[0].firstElementChild.clientWidth;
+            var seekBarFillRatio = offsetX / barWidth;
+
+            return seekBarFillRatio;
+        };
 
 
         // Seek bar interface
@@ -311,19 +330,20 @@ blocJams.directive('slider', function () {
 
             var percentageString = offsetXPercent + '%';
 
-            angular.element(fill).css({
-                width: percentageString
-            });
-            angular.element(thumb).css({
-                left: percentageString
-            });
+            return {
+                width: angular.element(fill).css({
+                    width: percentageString
+                }),
+                left: angular.element(thumb).css({
+                    left: percentageString
+                })
+            }
         };
 
 
         element.bind('click', function (event) {
-            var offsetX = event.pageX - $(this).offset().left;
-            var barWidth = element[0].firstElementChild.clientWidth;
-            var seekBarFillRatio = offsetX / barWidth;
+
+            var seekBarFillRatio = calculateSeekBarFillRatio(event);
 
             scope.value = seekBarFillRatio * scope.max;
 
@@ -334,12 +354,12 @@ blocJams.directive('slider', function () {
             updateSeekPercentage();
         });
 
+
         element.find('thumb').bind('mousedown', function (event) {
 
             $(document).bind('mousemove.thumb', function (event) {
-                var offsetX = event.pageX - element.offset().left;
-                var barWidth = element[0].firstElementChild.clientWidth;
-                var seekBarFillRatio = offsetX / barWidth;
+
+                var seekBarFillRatio = calculateSeekBarFillRatio(event);
 
                 scope.value = seekBarFillRatio * scope.max;
 
@@ -355,19 +375,17 @@ blocJams.directive('slider', function () {
                 $(document).unbind('mouseup.thumb');
             });
         });
-
     };
 
     return {
         templateUrl: '/templates/player_bar.html',
         restrict: 'E',
         scope: {
-            value: '@currentVolume',
-            max: '@maxVolume',
-            onValueChange: '&onVolumeChange'
+            value: '@',
+            max: '@',
+            onValueChange: '&'
         },
         link: linkFunction
-
     };
 
 });
