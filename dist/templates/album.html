@@ -35,7 +35,8 @@
                 <span class="ion-skip-backward"></span>
             </a>
             <a class="play-pause" ng-click='isPlaying ? pause() : play(currentSong())'>
-                <span class="ion-play"></span>
+                <span ng-show="isPlaying" class="ion-pause" ></span>
+                <span ng-hide="isPlaying" class="ion-play"></span>
             </a>
             <a class="next" ng-click='nextSong()'>
                 <span class="ion-skip-forward"></span>

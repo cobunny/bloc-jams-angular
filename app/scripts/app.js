@@ -281,6 +281,14 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope
 
 
 blocJams.directive('slider', function () {
+    
+    var linkFunction = function (scope, element, attributes) {
+        element.bind('click', function (event) {
+            var offsetX = event.pageX - $(this).offset().left;
+            var barWidth = element[0].firstElementChild.clientWidth;
+            var seekBarFillRatio = offsetX / barWidth;
+        });
+    };
 
     return {
         templateUrl: '/templates/player_bar.html',
@@ -288,15 +296,6 @@ blocJams.directive('slider', function () {
         scope: {},
         link: linkFunction
 
-    };
-
-
-    var linkFunction = function (scope, element, attributes) {
-        element.bind('click', function (event) {
-            var offsetX = event.pageX - $(this).offset().left;
-            var barWidth = element[0].firstElementChild.clientWidth;
-            var seekBarFillRatio = offsetX / barWidth;
-        });
     };
 
 });
