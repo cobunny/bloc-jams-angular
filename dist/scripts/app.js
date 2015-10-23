@@ -108,13 +108,13 @@ blocJams.filter('timeCode', function () {
 });
 
 
-blocJams.factory('SongPlayer', function () {
+blocJams.service('SongPlayer', function () {
     var currentSoundFile = null;
     var currentVolume = 80;
     var trackIndex = function (album, song) {
         return album.songs.indexOf(song);
     };
-    
+
     return {
         currentAlbum: null,
         currentSong: null,
@@ -211,12 +211,10 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope
             index = 0;
         }
     };
-    
-    $scope.currentSong = function() {   
+
+    $scope.currentSong = function () {
         return SongPlayer.currentSong;
     }
-    
-    console.log( $scope.currentSong.name);
 
     var timeUpdate = function () {
         SongPlayer.getTimePosition(function (timeData) {
@@ -259,13 +257,11 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope
         getDuration();
     };
 
-    $scope.currentVolume = function (volume) {
+    $scope.setVolume = function (volume) {
         SongPlayer.setVolume(volume);
     };
 
-
     $scope.hoverSong = null;
-
 
     $scope.hoverOn = function (song) {
         this.hoverSong = song;
@@ -288,17 +284,88 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope
 
 blocJams.directive('slider', function () {
     var linkFunction = function (scope, element, attributes) {
+        scope.value = attributes.value;
+        scope.max = attributes.max;
+
+        var fill = $('.fill')[1];
+        var thumb = $('.thumb')[1];
+
+        attributes.$observe('value', function (newValue) {
+            scope.value = parseFloat(newValue);
+        });
+
+        attributes.$observe('max', function (newValue) {
+            scope.max = parseFloat(newValue);
+        });
+
+
+        // Seek bar interface
+        var updateSeekPercentage = function () {
+
+            var seekBarFillRatio = scope.value / scope.max
+
+            var offsetXPercent = seekBarFillRatio * 100;
+
+            offsetXPercent = Math.max(0, offsetXPercent);
+            offsetXPercent = Math.min(100, offsetXPercent);
+
+            var percentageString = offsetXPercent + '%';
+
+            angular.element(fill).css({
+                width: percentageString
+            });
+            angular.element(thumb).css({
+                left: percentageString
+            });
+        };
+
+
         element.bind('click', function (event) {
             var offsetX = event.pageX - $(this).offset().left;
             var barWidth = element[0].firstElementChild.clientWidth;
             var seekBarFillRatio = offsetX / barWidth;
+
+            scope.value = seekBarFillRatio * scope.max;
+
+            scope.onValueChange({
+                value: scope.value
+            });
+
+            updateSeekPercentage();
         });
+
+        element.find('thumb').bind('mousedown', function (event) {
+
+            $(document).bind('mousemove.thumb', function (event) {
+                var offsetX = event.pageX - element.offset().left;
+                var barWidth = element[0].firstElementChild.clientWidth;
+                var seekBarFillRatio = offsetX / barWidth;
+
+                scope.value = seekBarFillRatio * scope.max;
+
+                scope.onValueChange({
+                    value: scope.value
+                });
+
+                updateSeekPercentage();
+            });
+
+            $(document).bind('mouseup.thumb', function () {
+                $(document).unbind('mousemove.thumb');
+                $(document).unbind('mouseup.thumb');
+            });
+        });
+
     };
 
     return {
         templateUrl: '/templates/player_bar.html',
         restrict: 'E',
-        scope: {},
+        scope: {
+            value: '@currentVolume',
+            max: '@maxVolume',
+            onValueChange: '&onVolumeChange'
+        },
         link: linkFunction
 
     };
