@@ -108,12 +108,13 @@ blocJams.filter('timeCode', function () {
 });
 
 
-blocJams.service('SongPlayer', function () {
+blocJams.factory('SongPlayer', function () {
     var currentSoundFile = null;
     var currentVolume = 80;
     var trackIndex = function (album, song) {
         return album.songs.indexOf(song);
     };
+    
     return {
         currentAlbum: null,
         currentSong: null,
@@ -210,6 +211,12 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope
             index = 0;
         }
     };
+    
+    $scope.currentSong = function() {   
+        return SongPlayer.currentSong;
+    }
+    
+    console.log( $scope.currentSong.name);
 
     var timeUpdate = function () {
         SongPlayer.getTimePosition(function (timeData) {
@@ -252,7 +259,6 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope
         getDuration();
     };
 
-
     $scope.currentVolume = function (volume) {
         SongPlayer.setVolume(volume);
     };
@@ -281,7 +287,6 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope
 
 
 blocJams.directive('slider', function () {
-    
     var linkFunction = function (scope, element, attributes) {
         element.bind('click', function (event) {
             var offsetX = event.pageX - $(this).offset().left;
