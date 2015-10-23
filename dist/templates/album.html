@@ -55,7 +55,7 @@
         <div class="player-bar-control-group right-controls">
             <div class="volume">
                 <span class="ion-volume-high"></span>
-                <slider></slider>
+                <slider current-volume ='{{ currentVolume }}' max-volume='100' on-volume-change='setVolume(value)'></slider>
             </div>
         </div>
     </div>
