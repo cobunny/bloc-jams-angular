@@ -296,9 +296,18 @@ blocJams.directive('slider', function () {
     var linkFunction = function (scope, element, attributes) {
         scope.value = attributes.value;
         scope.max = attributes.max;
+        var $slider = $(element);
 
-        var fill = $('.fill');
-        var thumb = $('.thumb');
+        var calculateSeekBarFillRatio = function (event) {
+            var offsetX = event.pageX - $slider.offset().left;
+            var barWidth = $slider[0].firstElementChild.clientWidth;
+            var seekBarFillRatio = offsetX / barWidth;
+
+            seekBarFillRatio = Math.max(0, seekBarFillRatio);
+            seekBarFillRatio = Math.min(1, seekBarFillRatio);
+
+            return seekBarFillRatio;
+        };
 
         attributes.$observe('value', function (newValue) {
             scope.value = parseFloat(newValue);
@@ -308,40 +317,26 @@ blocJams.directive('slider', function () {
             scope.max = parseFloat(newValue);
         });
 
-
-        var calculateSeekBarFillRatio = function (event) {
-            var offsetX = event.pageX - element.offset().left;
-            var barWidth = element[0].firstElementChild.clientWidth;
-            var seekBarFillRatio = offsetX / barWidth;
-
-            return seekBarFillRatio;
+        var percentString = function () {
+            var value = scope.value || 0;
+            var max = scope.max || 100;
+            percent = value / max * 100;
+            return percent + "%";
         };
 
-
-        // Seek bar interface
-        var updateSeekPercentage = function () {
-
-            var seekBarFillRatio = scope.value / scope.max
-
-            var offsetXPercent = seekBarFillRatio * 100;
-
-            offsetXPercent = Math.max(0, offsetXPercent);
-            offsetXPercent = Math.min(100, offsetXPercent);
-
-            var percentageString = offsetXPercent + '%';
-
+        scope.fillStyle = function () {
             return {
-                width: angular.element(fill).css({
-                    width: percentageString
-                }),
-                left: angular.element(thumb).css({
-                    left: percentageString
-                })
-            }
+                width: percentString()
+            };
         };
 
+        scope.thumbStyle = function () {
+            return {
+                left: percentString()
+            };
+        };
 
-        element.bind('click', function (event) {
+        scope.onClickSlider = function (event) {
 
             var seekBarFillRatio = calculateSeekBarFillRatio(event);
 
@@ -351,30 +346,32 @@ blocJams.directive('slider', function () {
                 value: scope.value
             });
 
-            updateSeekPercentage();
-        });
+        };
 
-
-        element.find('thumb').bind('mousedown', function (event) {
+        scope.trackThumb = function () {
 
             $(document).bind('mousemove.thumb', function (event) {
 
                 var seekBarFillRatio = calculateSeekBarFillRatio(event);
 
-                scope.value = seekBarFillRatio * scope.max;
+                scope.$apply(function () {
+                    scope.value = seekBarFillRatio * scope.max;
+                    notifyCallback(scope.value);
+                });
 
                 scope.onValueChange({
                     value: scope.value
                 });
 
-                updateSeekPercentage();
             });
 
             $(document).bind('mouseup.thumb', function () {
                 $(document).unbind('mousemove.thumb');
                 $(document).unbind('mouseup.thumb');
             });
-        });
+        };
+
+
     };
 
     return {
