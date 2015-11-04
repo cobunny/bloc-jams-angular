@@ -46,8 +46,8 @@
             <h2 class="song-name">{{currentSong().name}}</h2>
             <h2 class="artist-song-mobile">{{currentSong().name}} - {{album.artist}}</h2>
             <div class="seek-control">
-                <slider value="{{ setTime }}" max="{{duration}}" on-value-change="setTime(value)"></slider>
-                <div class="current-time">{{timeData}}</div>
+                <slider value="{{setTime}}" max="{{duration}}" on-value-change="setTime(value)"></slider>
+                <div class="current-time">{{timer}}</div>
                 <div class="total-time">{{duration}}</div>
             </div>
             <h3 class="artist-name">{{album.artist}}</h3>

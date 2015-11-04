@@ -163,7 +163,7 @@ blocJams.service('SongPlayer', function () {
                     var timer = buzz.toTimer(this.getTime());
                     callback({
                         time: timer,
-                        percent: this.getPercent()
+                        percent: this.getTime() / this.getDuration()
                     });
                 });
             }
@@ -223,8 +223,8 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope
 
     var timeUpdate = function () {
         SongPlayer.getTimePosition(function (timeData) {
-            $scope.timeData = timeData.time;
-            $scope.timePercent = timeData.percent;
+            $scope.timer = timeData.time;
+            $scope.percent = timeData.percent;
             $scope.$apply();
         });
     };
@@ -354,10 +354,7 @@ blocJams.directive('slider', function () {
 
                 var seekBarFillRatio = calculateSeekBarFillRatio(event);
 
-                scope.$apply(function () {
-                    scope.value = seekBarFillRatio * scope.max;
-                    notifyCallback(scope.value);
-                });
+                scope.value = seekBarFillRatio * scope.max;
 
                 scope.onValueChange({
                     value: scope.value
