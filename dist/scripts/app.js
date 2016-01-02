@@ -226,11 +226,11 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope
             }
         });
     };
-    
+
     $scope.currentSong = {
         audioUrl: {}
     };
-    
+
     $scope.setTime = function (event) {
         SongPlayer.setPercent(Math.round((event.offsetX / document.getElementById('seek-bar').clientWidth) * 100));
     };
@@ -254,30 +254,14 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', function ($scope
     };
 
 
-    $scope.previousSong = function () {
-        var currentSongIndex = function () {
-            return SongPlayer.previousSong();
-        };
-
-        if (currentSongIndex < 0) {
-            currentSongIndex = this.currentAlbum.songs.length - 1;
-        }
-
-        this.playOrPause(this.currentAlbum.songs[currentSongIndex]);
+    $scope.previousSong = function (song) {
+        $scope.playOrPause(($scope.album.songs.indexOf(song) - 1 < 0) ? $scope.album.songs[$scope.album.songs.length - 1] : $scope.album.songs[$scope.album.songs.indexOf(song) - 1]);
         timeUpdate();
         getDuration();
     };
 
-    $scope.nextSong = function () {
-        var currentSongIndex = function () {
-            return SongPlayer.nextSong();
-        };
-
-        if (currentSongIndex >= this.album.songs.length) {
-            currentSongIndex = 0;
-        }
-
-        this.playOrPause(this.album.songs[currentSongIndex]);
+    $scope.nextSong = function (song) {
+        $scope.playOrPause(($scope.album.songs.indexOf(song) + 1 >= $scope.album.songs.length - 1) ? $scope.album.songs[0] : $scope.album.songs[$scope.album.songs.indexOf(song) + 1]);
         timeUpdate();
         getDuration();
     };

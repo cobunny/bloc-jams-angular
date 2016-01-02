@@ -25,15 +25,15 @@
 <section class="player-bar">
     <div class="container">
         <div class="player-bar-control-group left-controls">
-            <a class="previous" ng-click="previousSong(song)">
-                <span class="ion-skip-backward"></span>
+            <a class="previous">
+                <span class="ion-skip-backward" ng-click="previousSong(currentSong)"></span>
             </a>
             <a class="play-pause">
                 <span ng-show="currentSong.playing" class="ion-pause" ng-click="playOrPause(currentSong)"></span>
                 <span ng-hide="currentSong.playing" class="ion-play" ng-click="playOrPause(currentSong)"></span>
             </a>
-            <a class="next" ng-click="nextSong(song)">
-                <span class="ion-skip-forward"></span>
+            <a class="next">
+                <span class="ion-skip-forward" ng-click="nextSong(currentSong)"></span>
             </a>
         </div>
         <div class="player-bar-control-group currently-playing">
