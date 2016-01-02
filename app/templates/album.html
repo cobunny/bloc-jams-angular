@@ -10,17 +10,11 @@
         </div>
     </section>
     <table class="album-view-song-list">
-        <tr class="album-view-song-item" ng-repeat="song in album.songs" ng-mouseover="hoverOn(song)" ng-mouseleave="hoverOff()">
-            <td class="song-item-number" ng-click="isPlaying && song === currentSong() ? pause() : play(song)">
-                <div ng-switch="getState(song)">
-                    <div ng-switch-when="hovering">
-                        <a class="album-song-button"><span class="ion-play"></span></a>
-                    </div>
-                    <div ng-switch-when="playing">
-                        <a class="album-song-button"><span class="ion-pause"></span></a>
-                    </div>
-                    <div ng-switch-default>
-                        {{$index+1}}.
+        <tr class="album-view-song-item" ng-repeat="song in album.songs" ng-click="playOrPause(song)" ng-mouseover="hovered = true" ng-mouseleave="hovered = false">
+            <td class="song-item-number">
+                <span ng-show="!hovered && !song.playing">{{$index+1}}.</span>
+                <a class="album-song-button" ng-show="hovered && !song.playing"><span class="ion-play"></span></a>
+                <a class="album-song-button" ng-show="song.playing"><span class="ion-pause"></span></a>
             </td>
             <td class="song-item-title">{{song.name}}</td>
             <td class="song-item-duration">{{song.length | timeCode}}</td>
@@ -31,23 +25,23 @@
 <section class="player-bar">
     <div class="container">
         <div class="player-bar-control-group left-controls">
-            <a class="previous" ng-click="previousSong()">
+            <a class="previous" ng-click="previousSong(song)">
                 <span class="ion-skip-backward"></span>
             </a>
-            <a class="play-pause" ng-click="isPlaying ? pause() : play(currentSong())">
-                <span ng-show="isPlaying" class="ion-pause"></span>
-                <span ng-hide="isPlaying" class="ion-play"></span>
+            <a class="play-pause">
+                <span ng-show="currentSong.playing" class="ion-pause" ng-click="playOrPause(currentSong)"></span>
+                <span ng-hide="currentSong.playing" class="ion-play" ng-click="playOrPause(currentSong)"></span>
             </a>
-            <a class="next" ng-click="nextSong()">
+            <a class="next" ng-click="nextSong(song)">
                 <span class="ion-skip-forward"></span>
             </a>
         </div>
         <div class="player-bar-control-group currently-playing">
-            <h2 class="song-name">{{currentSong().name}}</h2>
-            <h2 class="artist-song-mobile">{{currentSong().name}} - {{album.artist}}</h2>
+            <h2 class="song-name">{{currentSong.name}}</h2>
+            <h2 class="artist-song-mobile">{{currentSong.name}} - {{album.artist}}</h2>
             <div class="seek-control">
-                <slider value="{{setTime}}" max="{{duration}}" on-value-change="setTime(value)"></slider>
-                <div class="current-time">{{timer}}</div>
+                <slider value="{{timeData.percent}}" max="{{songPlayer.currentSong.length}}" on-change="songPlayer.setPercent(value)"></slider>
+                <div class="current-time">{{timeData.time}}</div>
                 <div class="total-time">{{duration}}</div>
             </div>
             <h3 class="artist-name">{{album.artist}}</h3>
@@ -55,7 +49,7 @@
         <div class="player-bar-control-group right-controls">
             <div class="volume">
                 <span class="ion-volume-high"></span>
-                <slider value="{{currentVolume}}" max="100" on-value-change="setVolume(value)"></slider>
+                <slider value="{{currentVolume}}" max="max" on-change="setVolume(value)"></slider>
             </div>
         </div>
     </div>
